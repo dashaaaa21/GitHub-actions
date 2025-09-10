@@ -1,9 +1,10 @@
-name: Build And Upload
+name: Build Project main
 
 on:
   push:
     branches:
       - main
+
 
 jobs:
   deploy:
@@ -12,26 +13,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm install
 
-      - name: Build project
-        run: npm run dev
+      - name: Build Project
+        run: npm run build
 
       - name: Archive build
-        run: tar -czf build.tar.gz build
+        run: |
+          mkdir -p .temp
+          tar -czf .temp/project-build.tar.gz build
 
-      - name: Upload archive vis SCP
+      - name: Upload files via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: build.tar.gz
+          source: .temp/project-build.tar.gz
           target: ~/htdocs/daria-tk-portfolio.swit.vn.ua
           strip_components: 1
 
-      - name: Extract archive
+      - name: Extract files
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.HOST }}
@@ -39,4 +42,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd htdocs/daria-tk-portfolio.swit.vn.ua
-            tar -xzf build.tar.gz
+            tar -xzf project-build.tar.gz
+            rm -rf project-build.tar.gz
+            mv build/* ./
+            rm -rf build
