@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd htdocs/daria-tk-portfolio.swit.vn.ua
+            cd htdocs/daria-tk-portfolio.swit.vn.ua/
             tar -xzf project-build.tar.gz
             rm -rf project-build.tar.gz
             mv build/* ./
